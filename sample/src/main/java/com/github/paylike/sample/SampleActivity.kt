@@ -1,6 +1,6 @@
 package com.github.paylike.sample
 
-import com.github.paylike.sample.screen1.Screen1View
+import com.github.paylike.sample.screen1.Screen1
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,7 +14,7 @@ class SampleActivity : ComponentActivity() {
 
         setContent { // In here, we can call composables!
             MaterialTheme {
-                Screen1View().Screen1()
+                Screen1()
             }
         }
     }
