@@ -45,6 +45,10 @@ class PaylikeEngine :
 
     private val log: Consumer<Any> = Consumer { println(it.toString()) }
 
+    fun getCurrentState(): EngineState {
+        return this.currentState
+    }
+
     suspend fun createPaymentDataDto(cardNumber: String, cvc: String, month: Int, year: Int) {
         if (
             !PaylikeLuhn.isValid(cardNumber) && apiMode == ApiMode.LIVE
