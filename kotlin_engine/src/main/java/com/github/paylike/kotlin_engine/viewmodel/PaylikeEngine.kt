@@ -43,7 +43,7 @@ class PaylikeEngine :
 
     private val apiService: PaylikeClient = PaylikeClient()
 
-    private val log: Consumer<Any> = Consumer { println(it.toString()) }
+    val log: Consumer<Any> = Consumer { println(it.toString()) }
 
     fun getCurrentState(): EngineState {
         return this.currentState
@@ -73,7 +73,7 @@ class PaylikeEngine :
 
     suspend fun startPayment(paymentAmount: PaymentAmount, paymentTestDto: PaymentTestDto?) {
         if (currentState != EngineState.WAITING_FOR_INPUT) {
-            throw Exception("Can't call this function in the state $currentState")
+            throw Exception("Can't call this function in this state $currentState")
         }
         repository.paymentRepository =
             repository.paymentRepository!!.copy(
@@ -83,7 +83,6 @@ class PaylikeEngine :
         try {
             val response = payment()
             repository.paymentRepository!!.hints.plus(response.paymentResponse.hints)
-
             if (response.isHTML) {
                 repository.htmlRepository = response.htmlBody
                 currentState = EngineState.WEBVIEW_CHALLENGE_REQUIRED
