@@ -35,6 +35,10 @@ class PaylikeEngine :
 
     private val error: PaylikeEngineError? = null
 
+    fun getError(): PaylikeEngineError? {
+        return this.error
+    }
+
     val repository: EngineRepository = EngineRepository()
 
     // Merchant ID

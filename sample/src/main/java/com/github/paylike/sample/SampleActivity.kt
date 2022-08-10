@@ -12,7 +12,7 @@ class SampleActivity : ComponentActivity() {
 
         setContent { // In here, we can call composables!
             MaterialTheme {
-                SampleScreen()
+                ScaffoldDemo()
             }
         }
     }
