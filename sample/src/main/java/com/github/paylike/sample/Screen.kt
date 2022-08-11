@@ -63,7 +63,7 @@ fun SampleScreen(isActive: Boolean, isActiveChange: (Boolean) -> Unit) {
         verticalArrangement = Arrangement.Center // 3
     ) {
         if (isActive) {
-            TdsWebView(engine.repository.htmlRepository as String, listener = DummyListener())
+            EngineSampleComposable()
         } else {
             TransactionIDText()
             val error = engine.getError()

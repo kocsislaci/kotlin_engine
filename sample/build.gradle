@@ -16,6 +16,8 @@ android {
         applicationId "com.github.paylike.sample"
         minSdk 26
         targetSdk 32
+        versionCode 1
+        versionName "1.0"
         vectorDrawables {
             useSupportLibrary true
         }
@@ -24,6 +26,18 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+        }
+        debug {
+            def localProperties = new Properties()
+            localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+            buildConfigField(
+                    "String",
+                    "PaylikeMerchantApiKey",
+                    (localProperties.containsKey("PaylikeMerchantApiKey")
+                            ? localProperties.getProperty("PaylikeMerchantApiKey")
+                            : "new String()"
+                    )
+            )
         }
     }
     compileOptions {
@@ -34,6 +48,7 @@ android {
         jvmTarget = '1.8'
     }
     buildFeatures {
+        viewBinding true
         compose true
     }
     composeOptions {
