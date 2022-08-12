@@ -31,25 +31,18 @@ class SampleActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            EngineSampleComposable()
+            ScaffoldDemo()
         }
     }
 }
 
 @Composable
-fun EngineSampleComposable() {
-    val engine = PaylikeEngine("e393f9ec-b2f7-4f81-b455-ce45b02d355d", ApiMode.TEST)
+fun EngineSampleComposable(engine: PaylikeEngine) {
+    println("htmlrepo: ${engine.repository.htmlRepository.toString()}")
     val paylikeWebview = PaylikeWebview(engine)
+    println("WebViewFOS: $paylikeWebview")
     val htmlBody: MutableState<String> = remember {
-        mutableStateOf("<!DOCTYPE html>\n" +
-                "<html>\n" +
-                "<body>\n" +
-                "\n" +
-                "<h1>My First Heading</h1>\n" +
-                "<p>My first paragraph.</p>\n" +
-                "\n" +
-                "</body>\n" +
-                "</html>")
+        mutableStateOf(engine.repository.htmlRepository!!)
     }
     Kotlin_engineTheme {
         Surface(
@@ -59,32 +52,20 @@ fun EngineSampleComposable() {
             LazyColumn(Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.SpaceEvenly) {
-                item {
+ /*               item {
                     Button(
                         onClick = {
-                            engine.resetPaymentFlow()
-                            runBlocking {
-                                try {
-                                    engine.createPaymentDataDto("4012111111111111", "111", 11, 2023)
-                                    engine.startPayment(
-                                        PaymentAmount("EUR", 10, 0),
-                                        PaymentTestDto()
-                                    )
-                                } catch (e: ServerErrorException) {
-                                    println("serverErrorException " + e.status.toString())
-                                    println("serverErrorException " + e.headers.toString())
-                                }
                                 if (!engine.repository.htmlRepository.isNullOrEmpty()) {
                                     htmlBody.value = engine.repository.htmlRepository!!
                                     println(htmlBody.value)
                                 }
                                 println(engine.getCurrentState())
                             }
-                        },
                     ) {
                         Text(text = "Pay")
                     }
                 }
+*/
                 item {
                     paylikeWebview.WebviewComponent()
                 }

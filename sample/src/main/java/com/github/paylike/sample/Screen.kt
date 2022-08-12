@@ -16,15 +16,16 @@ import androidx.compose.ui.unit.sp
 import com.github.paylike.kotlin_client.domain.dto.payment.request.test.PaymentTestDto
 import com.github.paylike.kotlin_engine.model.service.ApiMode
 import com.github.paylike.kotlin_engine.view.JsListener
-import com.github.paylike.kotlin_engine.view.TdsWebView
 import com.github.paylike.kotlin_engine.viewmodel.EngineState
 import com.github.paylike.kotlin_engine.viewmodel.PaylikeEngine
 import com.github.paylike.kotlin_money.PaymentAmount
+import com.github.paylike.kotlin_request.exceptions.ServerErrorException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
-val engine = PaylikeEngine("MERCHANT_ID", ApiMode.TEST)
+val engine = PaylikeEngine("e393f9ec-b2f7-4f81-b455-ce45b02d355d", ApiMode.TEST)
 
 class DummyListener : JsListener {
     @JavascriptInterface
@@ -46,6 +47,7 @@ fun shouldBeActive(): Boolean {
 @Composable
 fun ScaffoldDemo() {
     var isActive by remember { mutableStateOf(shouldBeActive()) }
+    println("isActive: $isActive")
     Scaffold(
         topBar = { TopAppBar(title = {Text("Pay with PayLike")},backgroundColor = paylikeGreen)  },
 
@@ -62,8 +64,9 @@ fun SampleScreen(isActive: Boolean, isActiveChange: (Boolean) -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally, // 2
         verticalArrangement = Arrangement.Center // 3
     ) {
+        println(isActive)
         if (isActive) {
-            EngineSampleComposable()
+            EngineSampleComposable(engine)
         } else {
             TransactionIDText()
             val error = engine.getError()
@@ -99,27 +102,31 @@ fun PayButton(isActiveChange: (Boolean) -> Unit) {
             contentColor = androidx.compose.ui.graphics.Color.White
         ),
         onClick = {
-            GlobalScope.launch(Dispatchers.IO) {
-                if (engine.countObservers() == 0) {
-                    engine.addObserver { _, _ ->
-                        println("engine change")
-                        println(engine.getCurrentState())
-                        // TODO: Should be dependent on the current engine state
-                        // SUCCESS, ERROR, WAITING_FOR_INPUT -> FALSE
-                        // Everything else -> TRUE
+//            GlobalScope.launch(Dispatchers.IO) {
+//                if (engine.countObservers() == 0) {
+//                    engine.addObserver { _, _ ->
+//                        println("engine change")
+//                        println(engine.getCurrentState())
+
+//                        isActiveChange(shouldBeActive())
+//                  }
+//                }
+                engine.resetPaymentFlow()
+                runBlocking {
+                    try {
+                        engine.createPaymentDataDto("4012111111111111", "111", 11, 2023)
+                        engine.startPayment(
+                            PaymentAmount("EUR", 10, 0),
+                            PaymentTestDto()
+                        )
                         isActiveChange(shouldBeActive())
+                    } catch (e: ServerErrorException) {
+                        println("serverErrorException " + e.status.toString())
+                        println("serverErrorException " + e.headers.toString())
                     }
-                }
-                engine.createPaymentDataDto("4012111111111111", "111", 11, 2023)
-                engine.startPayment(PaymentAmount(
-                    currency = "EUR",
-                    value = 100,
-                    exponent = 0
-                ), PaymentTestDto())
-                // TODO: Remove after engine fixed
-                engine.bumpState()
+
             }
-        },
+        }
     ) {
         Text("Pay")
     }

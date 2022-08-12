@@ -54,22 +54,6 @@ class PaylikeEngine :
         return this.currentState
     }
 
-    // TODO: Remove as it is used as mock until engine works
-    fun bumpState() {
-        this.currentState = EngineState.WEBVIEW_CHALLENGE_REQUIRED
-        repository.htmlRepository = """
-            <html>
-            <body>
-            <h1>Mock</h1>
-            </body>
-            </html>
-        """.trimIndent()
-        println("HTML SET")
-        this.setChanged()
-        this.notifyObservers()
-        println("Observers notified")
-    }
-
     suspend fun createPaymentDataDto(cardNumber: String, cvc: String, month: Int, year: Int) {
         if (
             !PaylikeLuhn.isValid(cardNumber) && apiMode == ApiMode.LIVE
